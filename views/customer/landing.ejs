@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Employee Dashboard - East Coast Railway</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex flex-col min-h-screen">
+
+  <!-- Header -->
+  <header class="bg-blue-900 text-white py-6 shadow-md">
+    <div class="container mx-auto flex justify-between items-center px-6">
+      <div class="flex items-center gap-4">
+        <img src="/images/image.png" alt="ECR Logo" class="h-16 w-16">
+        <div>
+          <h1 class="text-2xl font-bold">पूर्व तट रेलवे</h1>
+          <h2 class="text-sm tracking-widest">(EAST COAST RAILWAY)</h2>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Section -->
+  <main class="flex-grow flex items-center justify-center">
+    <div class="bg-white p-10 rounded-lg shadow-lg w-full max-w-md text-center">
+      <h2 class="text-2xl font-semibold text-blue-800 mb-6">Welcome Employee 👨‍💼</h2>
+
+      <div class="flex flex-col gap-4">
+        <a href="/employee/appointments/view" class="bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg text-lg font-medium">
+          📅 See All Appointments
+        </a>
+        <a href="/employee/tours" class="bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg text-lg font-medium">
+          🧳 Tour Programme's
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer (Optional) -->
+  <footer class="bg-blue-900 text-white text-center py-3">
+    © <%= new Date().getFullYear() %> East Coast Railway
+  </footer>
+
+</body>
+</html>

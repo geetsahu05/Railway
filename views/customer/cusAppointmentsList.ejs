@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Appointments List - Employee View</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+
+  <!-- Header -->
+  <header class="bg-blue-900 text-white py-4">
+    <div class="container mx-auto flex justify-between items-center px-6">
+      <div class="flex items-center gap-4">
+        <img src="/images/image.png" alt="Logo" class="h-14 w-14">
+        <div>
+          <h1 class="text-xl font-bold">पूर्व तट रेलवे</h1>
+          <h2 class="text-sm tracking-widest">(EAST COAST RAILWAY)</h2>
+        </div>
+      </div>
+      <a href="/employee" class="bg-red-500 px-4 py-2 rounded hover:bg-red-600">Home</a>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="max-w-6xl mx-auto mt-10 bg-white shadow-md rounded-lg p-6">
+    <div class="mb-6 text-center">
+      <h2 class="text-2xl font-semibold text-blue-800">Appointments & Meetings (Employee View)</h2>
+    </div>
+
+    <!-- Filter -->
+    <form action="/employee/appointments/view" method="GET" class="flex flex-wrap gap-4 mb-4">
+      <div>
+        <label class="font-semibold text-gray-700">From Date:</label><br/>
+        <input type="date" name="from" class="border rounded px-2 py-1" />
+      </div>
+      <div>
+        <label class="font-semibold text-gray-700">To Date:</label><br/>
+        <input type="date" name="to" class="border rounded px-2 py-1" />
+      </div>
+      <div class="flex items-end gap-2">
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">SHOW</button>
+        <a href="/employee/appointments/view" class="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500">CLEAR</a>
+      </div>
+    </form>
+
+    <!-- Appointments Table -->
+    <div class="overflow-x-auto">
+      <table class="w-full table-auto border border-gray-300 text-sm">
+        <thead class="bg-blue-100 text-blue-900 font-semibold">
+          <tr>
+            <th class="border px-2 py-2">Date</th>
+            <th class="border px-2 py-2">Time</th>
+            <th class="border px-2 py-2">With</th>
+            <th class="border px-2 py-2">Designation</th>
+            <th class="border px-2 py-2">Purpose</th>
+            <th class="border px-2 py-2">Venue</th>
+            <th class="border px-2 py-2">VIP?</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% 
+            const today = new Date();
+            const tomorrow = new Date(today);
+            tomorrow.setDate(today.getDate() + 1);
+            const todayStr = today.toISOString().split('T')[0];
+            const tomorrowStr = tomorrow.toISOString().split('T')[0];
+          %>
+          <% appointments.forEach(item => {
+            const apptDate = new Date(item.date);
+            const dateStr = apptDate.toISOString().split('T')[0];
+            let rowClass = "";
+            if (dateStr === todayStr) {
+              rowClass = "bg-green-200";
+            } else if (dateStr === tomorrowStr) {
+              rowClass = "bg-yellow-300";
+            } else if (apptDate > tomorrow) {
+              rowClass = "bg-sky-200";
+            } else {
+              rowClass = "bg-white";
+            }
+          %>
+            <tr class="<%= rowClass %> text-center">
+              <td class="border px-2 py-1"><%= dateStr %></td>
+              <td class="border px-2 py-1"><%= item.time %></td>
+              <td class="border px-2 py-1"><%= item.withh %></td>
+              <td class="border px-2 py-1"><%= item.designation %></td>
+              <td class="border px-2 py-1"><%= item.purpose %></td>
+              <td class="border px-2 py-1"><%= item.venue %></td>
+              <td class="border px-2 py-1"><%= item.isVIP ? "Yes" : "No" %></td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Color Legend -->
+    <div class="mt-6 flex flex-wrap gap-4 text-sm">
+      <div class="flex items-center gap-2">
+        <span class="w-4 h-4 bg-green-200 border border-gray-400"></span> Today
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="w-4 h-4 bg-yellow-300 border border-gray-400"></span> Tomorrow
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="w-4 h-4 bg-sky-200 border border-gray-400"></span> Future
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="w-4 h-4 bg-white border border-gray-400"></span> Past
+      </div>
+    </div>
+  </main>
+
+</body>
+</html>

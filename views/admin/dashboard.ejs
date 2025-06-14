@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex min-h-screen">
+
+  <!-- Sidebar -->
+  <aside class="w-64 bg-blue-900 text-white flex flex-col p-6 space-y-6">
+    <h2 class="text-2xl font-bold mb-6">Admin Menu</h2>
+    <a href="/appointments/all" class="block px-4 py-3 rounded hover:bg-blue-700 transition font-medium">
+      Appointments
+    </a>
+    <a href="/admin/meetings" class="block px-4 py-3 rounded hover:bg-blue-700 transition font-medium">
+      Meetings
+    </a>
+  </aside>
+
+  <!-- Main content -->
+  <div class="flex-1 flex flex-col">
+    <!-- Blue Header -->
+    <header class="bg-blue-600 text-white py-4 shadow px-6 flex justify-between items-center">
+      <h1 class="text-2xl font-bold">Admin Dashboard</h1>
+      <a href="/logout" class="bg-white text-blue-600 px-4 py-2 rounded hover:bg-blue-100 transition">Logout</a>
+    </header>
+
+    <!--  Dashboard Box -->
+    <main class="p-6 max-w-xl mx-auto mt-10 bg-white rounded-lg shadow-lg flex-grow">
+      <h2 class="text-xl font-semibold mb-4 text-gray-800">Welcome, <%= admin.name %>!</h2>
+
+      <div class="space-y-2 text-gray-700 mb-6">
+        <div class="flex justify-between">
+          <span class="font-medium">Admin ID:</span>
+          <span><%= admin.id %></span>
+        </div>
+        <div class="flex justify-between">
+          <span class="font-medium">Email:</span>
+          <span><%= admin.email %></span>
+        </div>
+      </div>
+
+      <!-- Original buttons kept as is -->
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <a href="/admin/appointments" class="bg-blue-600 text-white py-3 px-5 rounded-lg text-center font-medium hover:bg-blue-700 transition">
+          Appointments & Meetings
+        </a>
+
+        <a href="/admin/leave" class="bg-green-600 text-white py-3 px-5 rounded-lg text-center font-medium hover:bg-green-700 transition">
+          Tour Programme / Leave
+        </a>
+      </div>
+    </main>
+  </div>
+
+</body>
+</html>
