@@ -5,6 +5,8 @@ require('dotenv').config();
 const bcrypt = require('bcrypt');
 const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
+const path = require("path");
+
 
 const DBconnection = require("./config/DB");
 const Admin = require('./models/admin');
@@ -13,6 +15,7 @@ const Appointment = require('./models/appointments');
 const PORT = process.env.PORT || 3000; 
 
 app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "views"));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
