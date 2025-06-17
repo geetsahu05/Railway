@@ -231,11 +231,11 @@ app.post('/admin/appointments', async (req, res) => {
 
       app.post('/admin/appointments/edit/:id', async (req, res) => {
         try {
-          const { date, time, type, designation, purpose, venue, isVIP } = req.body;
+          const { date, time, withh, designation, purpose, venue, isVIP } = req.body;
           await Appointment.findByIdAndUpdate(req.params.id, {
             date,
             time,
-            type,
+            withh,
             designation,
             purpose,
             venue,
