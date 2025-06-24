@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Tour Programme / Leave</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+
+  <!-- Header -->
+  <header class="bg-blue-900 text-white py-4 shadow-md">
+    <div class="container mx-auto flex justify-between items-center px-6">
+      <div class="flex items-center gap-4">
+        <img src="/images/image.png" alt="Logo" class="h-16 w-16" />
+        <div>
+          <h1 class="text-xl font-bold">पूर्व तट रेलवे</h1>
+          <h2 class="text-sm tracking-widest">(EAST COAST RAILWAY)</h2>
+        </div>
+      </div>
+      <div class="flex gap-4">
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="max-w-7xl mx-auto mt-8 bg-white p-6 rounded shadow-lg">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-2xl font-semibold text-blue-900">Tour Programme/Leave</h2>
+    </div>
+
+    <!-- Filter Form -->
+    <form action="/employee/tours" method="GET" class="flex flex-wrap gap-4 mb-4">
+      <div>
+        <label class="font-semibold">From Date:</label><br>
+        <input type="date" name="from" class="border px-2 py-1 rounded" />
+      </div>
+      <div>
+        <label class="font-semibold">To Date:</label><br>
+        <input type="date" name="to" class="border px-2 py-1 rounded" />
+      </div>
+      <div class="flex items-end gap-2">
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">SHOW</button>
+        <a href="/employee/tours" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">CLEAR</a>
+      </div>
+    </form>
+
+    <!-- Table -->
+    <div class="overflow-x-auto">
+      <table class="w-full table-auto border border-gray-300 text-sm">
+        <thead class="bg-blue-100 text-blue-900">
+          <tr>
+            <th class="border px-3 py-2">Officer</th>
+            <th class="border px-3 py-2">From</th>
+            <th class="border px-3 py-2">To</th>
+            <th class="border px-3 py-2">Out To</th>
+            <th class="border px-3 py-2">Duty/Leave</th>
+            <th class="border px-3 py-2">Purpose</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% 
+            const todayStr = new Date().toISOString().split("T")[0];
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const tomorrowStr = tomorrow.toISOString().split("T")[0];
+          %>
+          <% tours.forEach(item => {
+            const fromStr = new Date(item.leavingDate).toISOString().split("T")[0];
+            const toStr = new Date(item.comingDate).toISOString().split("T")[0];
+
+            let rowColor = "bg-white";
+            if (fromStr === todayStr || toStr === todayStr) {
+              rowColor = "bg-green-300"; // Today
+            } else if (fromStr === tomorrowStr || toStr === tomorrowStr) {
+              rowColor = "bg-yellow-300"; // Tomorrow
+            } else if (new Date(item.leavingDate) > new Date()) {
+              rowColor = "bg-sky-200"; // Future
+            } else {
+              rowColor = "bg-gray-200"; // Past
+            }
+          %>
+          <tr class="<%= rowColor %> text-center">
+            <td class="border px-2 py-1"><%= item.designation %></td>
+            <td class="border px-2 py-1"><%= new Date(item.leavingDate).toLocaleString() %></td>
+            <td class="border px-2 py-1"><%= new Date(item.comingDate).toLocaleString() %></td>
+            <td class="border px-2 py-1"><%= item.goingTo %></td>
+            <td class="border px-2 py-1"><%= item.leaveOrDuty %></td>
+            <td class="border px-2 py-1"><%= item.purpose %></td>
+          </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Legend -->
+    <div class="mt-6 flex gap-6 text-sm">
+      <div class="flex items-center gap-2">
+        <span class="w-4 h-4 bg-green-300 border border-gray-400"></span> On Duty/Leave (Today)
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="w-4 h-4 bg-yellow-300 border border-gray-400"></span> Duty/Leave (Tomorrow)
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="w-4 h-4 bg-sky-200 border border-gray-400"></span> Future Duty/Leave
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="w-4 h-4 bg-gray-200 border border-gray-400"></span> Past Duty/Leave
+      </div>
+    </div>
+  </main>
+
+</body>
+</html>

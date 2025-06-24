@@ -11,6 +11,7 @@ const path = require("path");
 const DBconnection = require("./config/DB");
 const Admin = require('./models/admin');
 const Appointment = require('./models/appointments');
+const Tour = require('./models/tour');
 
 const PORT = process.env.PORT || 3000; 
 
@@ -45,7 +46,7 @@ function verifyToken(req, res, next) {
 
 app.get("/" , (req , res) => {
 
-    res.render("landingPage")
+    res.render("customer/landing")
 })
 
 
@@ -270,7 +271,134 @@ app.post('/admin/appointments', async (req, res) => {
         }
       });
       
-      
+// Render Tour Form
+app.get('/admin/tour', (req, res) => {
+  res.render('admin/tourAdd'); // your EJS form
+});
+
+// Submit Form
+app.post('/admin/tour', async (req, res) => {
+  try {
+    const { name, designation, leavingDate, comingDate, purpose, goingTo, leaveOrDuty } = req.body;
+
+    const tour = new Tour({
+      name,
+      designation,
+      leavingDate,
+      comingDate,
+      purpose,
+      goingTo,
+      leaveOrDuty
+    });
+
+    await tour.save();
+    res.redirect('/admin/tour/list');
+  } catch (err) {
+    console.error('Error saving tour:', err);
+    res.status(500).send('Something went wrong!');
+  }
+});
+
+
+app.get('/admin/tour/list', async (req, res) => {
+  try {
+    const { from, to } = req.query;
+    let query = {};
+
+    if (from && to && !isNaN(Date.parse(from)) && !isNaN(Date.parse(to))) {
+      const fromDate = new Date(from);
+      const toDate = new Date(to);
+      toDate.setHours(23, 59, 59, 999); // Include the full "To" date
+
+      query.leavingDate = {
+        $gte: fromDate,
+        $lte: toDate
+      };
+    }
+
+    const tours = await Tour.find(query).sort({ leavingDate: 1 });
+    res.render('admin/tourList', { tours });
+
+  } catch (err) {
+    console.error('Error fetching tours:', err);
+    res.status(500).send('Server error');
+  }
+});
+
+
+
+app.get('/employee/tours', async (req, res) => {
+  try {
+    const { from, to } = req.query;
+    let query = {};
+
+    if (from && to && !isNaN(Date.parse(from)) && !isNaN(Date.parse(to))) {
+      const fromDate = new Date(from);
+      const toDate = new Date(to);
+      toDate.setHours(23, 59, 59, 999); // Include the full "To" date
+
+      query.leavingDate = {
+        $gte: fromDate,
+        $lte: toDate
+      };
+    }
+
+    const tours = await Tour.find(query).sort({ leavingDate: 1 });
+    res.render('customer/tourList', { tours });
+
+  } catch (err) {
+    console.error('Error fetching tours:', err);
+    res.status(500).send('Server error');
+  }
+});
+
+// Appointments API
+app.get('/employee/api/appointments', async (req, res) => {
+  try {
+    const { from, to } = req.query;
+    let query = {};
+
+    if (from && to && !isNaN(Date.parse(from)) && !isNaN(Date.parse(to))) {
+      const fromDate = new Date(from);
+      const toDate = new Date(to);
+      toDate.setHours(23, 59, 59, 999);
+
+      query.date = { $gte: fromDate, $lte: toDate };
+    }
+
+    const appointments = await Appointment.find(query).sort({ date: 1 });
+    res.json({ success: true, appointments });
+
+  } catch (err) {
+    console.error('Error fetching appointments:', err);
+    res.status(500).json({ success: false, message: 'Server Error' });
+  }
+});
+
+// Tours API
+app.get('/employee/api/tours', async (req, res) => {
+  try {
+    const { from, to } = req.query;
+    let query = {};
+
+    if (from && to && !isNaN(Date.parse(from)) && !isNaN(Date.parse(to))) {
+      const fromDate = new Date(from);
+      const toDate = new Date(to);
+      toDate.setHours(23, 59, 59, 999);
+
+      query.leavingDate = { $gte: fromDate, $lte: toDate };
+    }
+
+    const tours = await Tour.find(query).sort({ leavingDate: 1 });
+    res.json({ success: true, tours });
+
+  } catch (err) {
+    console.error('Error fetching tours:', err);
+    res.status(500).json({ success: false, message: 'Server Error' });
+  }
+});
+
 app.listen(PORT, () => {
     console.log(`🚀 Server is running on http://localhost:${PORT}`);
 });
+

@@ -17,29 +17,71 @@
           <h2 class="text-sm tracking-widest">(EAST COAST RAILWAY)</h2>
         </div>
       </div>
+      <a href="/admin/login" class="bg-white text-blue-900 font-semibold px-4 py-2 rounded hover:bg-gray-200">
+        🔐 Admin Login
+      </a>
     </div>
   </header>
 
-  <!-- Main Section -->
-  <main class="flex-grow flex items-center justify-center">
-    <div class="bg-white p-10 rounded-lg shadow-lg w-full max-w-md text-center">
-      <h2 class="text-2xl font-semibold text-blue-800 mb-6">Welcome Employee 👨‍💼</h2>
+  <!-- Main Layout -->
+  <main class="flex flex-grow">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-white shadow-md p-6">
+      <h2 class="text-xl font-bold text-blue-900 mb-6">Welcome Employee 👨‍💼</h2>
+      <button onclick="showSection('appointments')" class="w-full text-left bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded mb-4 font-medium">
+        🗕️ See All Appointments
+      </button>
+      <button onclick="showSection('tours')" class="w-full text-left bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded font-medium">
+        🧳 Tour Programme's
+      </button>
+    </aside>
 
-      <div class="flex flex-col gap-4">
-        <a href="/employee/appointments/view" class="bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg text-lg font-medium">
-          📅 See All Appointments
-        </a>
-        <a href="/employee/tours" class="bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg text-lg font-medium">
-          🧳 Tour Programme's
-        </a>
-      </div>
-    </div>
+    <!-- Right Content Area -->
+    <section class="flex-grow bg-white p-10 overflow-auto">
+      <div id="appointmentsSection" style="display: none;"></div>
+      <div id="tourSection" style="display: none;"></div>
+    </section>
   </main>
 
-  <!-- Footer (Optional) -->
+  <!-- Footer -->
   <footer class="bg-blue-900 text-white text-center py-3">
-    © <%= new Date().getFullYear() %> East Coast Railway
+    &copy; <%= new Date().getFullYear() %> East Coast Railway
   </footer>
+
+  <script>
+    function showSection(section) {
+      document.getElementById("appointmentsSection").style.display = "none";
+      document.getElementById("tourSection").style.display = "none";
+
+      if (section === "appointments") {
+        document.getElementById("appointmentsSection").style.display = "block";
+        loadAppointments();
+      } else if (section === "tours") {
+        document.getElementById("tourSection").style.display = "block";
+        loadTours();
+      }
+    }
+
+    async function loadAppointments() {
+      try {
+        const res = await fetch('/employee/appointments/view');
+        const html = await res.text();
+        document.getElementById("appointmentsSection").innerHTML = html;
+      } catch (err) {
+        document.getElementById("appointmentsSection").innerHTML = '<p class="text-red-500">Error loading appointments</p>';
+      }
+    }
+
+    async function loadTours() {
+      try {
+        const res = await fetch('/employee/tours');
+        const html = await res.text();
+        document.getElementById("tourSection").innerHTML = html;
+      } catch (err) {
+        document.getElementById("tourSection").innerHTML = '<p class="text-red-500">Error loading tours</p>';
+      }
+    }
+  </script>
 
 </body>
 </html>
