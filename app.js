@@ -29,6 +29,20 @@ app.use(express.static('public'));
 
 DBconnection();
 
+// function verifyToken(req, res, next) {
+//   const token = req.cookies.token || req.header("Authorization")?.replace("Bearer ", "");
+
+//   if (!token) return res.redirect("/admin/login");
+
+//   try {
+//     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+//     req.admin = decoded;
+//     next();
+//   } catch (err) {
+//     return res.status(401).send("Invalid token");
+//   }
+// }
+
 function verifyToken(req, res, next) {
   const token = req.cookies.token || req.header("Authorization")?.replace("Bearer ", "");
 
@@ -37,12 +51,17 @@ function verifyToken(req, res, next) {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.admin = decoded;
+
+    // Set cache control headers to prevent storing admin pages in browser history
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+
     next();
   } catch (err) {
     return res.status(401).send("Invalid token");
   }
 }
-
 
 app.get("/" , (req , res) => {
 

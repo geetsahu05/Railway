@@ -38,7 +38,7 @@
 
     <!-- Right Content Area -->
     <section class="flex-grow bg-white p-10 overflow-auto">
-      <div id="appointmentsSection" style="display: none;"></div>
+      <div id="appointmentsSection" style="display: block;"></div>
       <div id="tourSection" style="display: none;"></div>
     </section>
   </main>
@@ -81,6 +81,11 @@
         document.getElementById("tourSection").innerHTML = '<p class="text-red-500">Error loading tours</p>';
       }
     }
+
+    // Load appointments by default on page load
+    window.addEventListener('DOMContentLoaded', () => {
+      loadAppointments();
+    });
   </script>
 
 </body>

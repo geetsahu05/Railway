@@ -7,6 +7,10 @@
 </head>
 <body class="bg-gray-100 flex min-h-screen">
 
+  <% if (!admin || !admin.email) { %>
+    <script>window.location.href = "/admin/login";</script>
+  <% } %>
+
   <!-- Sidebar -->
   <aside class="w-64 bg-blue-900 text-white flex flex-col p-6 space-y-6">
     <h2 class="text-2xl font-bold mb-6">Admin Menu</h2>
@@ -41,7 +45,6 @@
         </div>
       </div>
 
-      <!-- Original buttons kept as is -->
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <a href="/admin/appointments" class="bg-blue-600 text-white py-3 px-5 rounded-lg text-center font-medium hover:bg-blue-700 transition">
           Appointments & Meetings
@@ -54,5 +57,13 @@
     </main>
   </div>
 
+  <!-- Force reload if accessed via browser back button -->
+  <script>
+    window.addEventListener("pageshow", function (event) {
+      if (event.persisted || (performance.getEntriesByType("navigation")[0]?.type === "back_forward")) {
+        window.location.reload();
+      }
+    });
+  </script>
 </body>
 </html>
