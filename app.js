@@ -199,44 +199,80 @@ app.post('/admin/appointments', async (req, res) => {
       res.status(500).send('Server error while saving appointment.');
     }
   });
-
-  app.get('/appointments/all', async (req, res) => {
-    try {
-      const appointments = await Appointment.find().sort({ date: 1, time: 1 });
-      res.render('admin/appointments-list', { appointments });
-    } catch (err) {
-      res.status(500).send('Server Error');
-    }
-  });
   
 
-  app.get('/admin/appointments/view', async (req, res) => {
-    try {
-    const { from, to } = req.query;
-    let filter = {};
+app.get('/appointments/all', async (req, res) => {
+  try {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Start of today
+
+    const appointments = await Appointment.find({
+      date: { $gte: today }
+    }).sort({ date: 1, time: 1 });
+
+    res.render('admin/appointments-list', { appointments });
+  } catch (err) {
+    console.error('Error fetching all upcoming appointments:', err);
+    res.status(500).send('Server Error');
+  }
+});
+
+  
+
+  // app.get('/admin/appointments/view', async (req, res) => {
+  //   try {
+  //   const { from, to } = req.query;
+  //   let filter = {};
     
 
-    if (from && to) {
+  //   if (from && to) {
       
-      filter.date = {
-        $gte: new Date(from),
-        $lte: new Date(to)
-      };
+  //     filter.date = {
+  //       $gte: new Date(from),
+  //       $lte: new Date(to)
+  //     };
+  //   } else if (from) {
+  //     filter.date = { $gte: new Date(from) };
+  //   } else if (to) {
+  //     filter.date = { $lte: new Date(to) };
+  //   }
+    
+  //   const appointments = await Appointment.find(filter).sort({ date: 1, time: 1 });
+    
+  //   res.render('admin/appointments-list', { appointments });
+  //   } catch (err) {
+  //   console.error('Error fetching filtered appointments:', err);
+  //   res.status(500).send('Server Error');
+  //   }
+  //   });
+
+app.get('/admin/appointments/view', async (req, res) => {
+  try {
+    const { from, to } = req.query;
+    let filter = {};
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // Default: future or today's appointments
+    filter.date = { $gte: today };
+
+    if (from && to) {
+      filter.date = { $gte: new Date(from), $lte: new Date(to) };
     } else if (from) {
       filter.date = { $gte: new Date(from) };
     } else if (to) {
-      filter.date = { $lte: new Date(to) };
+      filter.date = { $gte: today, $lte: new Date(to) };
     }
-    
+
     const appointments = await Appointment.find(filter).sort({ date: 1, time: 1 });
-    
     res.render('admin/appointments-list', { appointments });
-    } catch (err) {
+  } catch (err) {
     console.error('Error fetching filtered appointments:', err);
     res.status(500).send('Server Error');
-    }
-    });
-  
+  }
+});
+
     app.get('/admin/appointments/edit/:id', async (req, res) => {
         try {
           const appointment = await Appointment.findById(req.params.id);
@@ -273,22 +309,40 @@ app.post('/admin/appointments', async (req, res) => {
       });
       
 
-      app.get('/employee/appointments/view', async (req, res) => {
-        try {
-          const { from, to } = req.query;
-          let query = {};
-      
-          if (from && to) {
-            query.date = { $gte: from, $lte: to };
-          }
-      
-          const appointments = await Appointment.find(query).sort({ date: 1 });
-          res.render('customer/cusAppointmentsList', { appointments });
-        } catch (err) {
-          console.error('Error fetching appointments:', err);
-          res.status(500).send('Server Error');
+    app.get('/employee/appointments/view', async (req, res) => {
+      try {
+        const { from, to } = req.query;
+        let query = {};
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Midnight
+
+        // Filter only today's and future appointments
+        query.date = { $gte: today };
+
+        // Further filter by query if provided
+        if (from && to) {
+          query.date = {
+            $gte: new Date(from),
+            $lte: new Date(to)
+          };
+        } else if (from) {
+          query.date = { $gte: new Date(from) };
+        } else if (to) {
+          query.date = {
+            $gte: today,
+            $lte: new Date(to)
+          };
         }
-      });
+
+        const appointments = await Appointment.find(query).sort({ date: 1 });
+        res.render('customer/cusAppointmentsList', { appointments });
+      } catch (err) {
+        console.error('Error fetching appointments:', err);
+        res.status(500).send('Server Error');
+      }
+    });
+
       
 // Render Tour Form
 app.get('/admin/tour', (req, res) => {
@@ -319,20 +373,81 @@ app.post('/admin/tour', async (req, res) => {
 });
 
 
+// app.get('/admin/tour/list', async (req, res) => {
+//   try {
+//     const { from, to } = req.query;
+//     let query = {};
+
+//     if (from && to && !isNaN(Date.parse(from)) && !isNaN(Date.parse(to))) {
+//       const fromDate = new Date(from);
+//       const toDate = new Date(to);
+//       toDate.setHours(23, 59, 59, 999); // Include the full "To" date
+
+//       query.leavingDate = {
+//         $gte: fromDate,
+//         $lte: toDate
+//       };
+//     }
+
+//     const tours = await Tour.find(query).sort({ leavingDate: 1 });
+//     res.render('admin/tourList', { tours });
+
+//   } catch (err) {
+//     console.error('Error fetching tours:', err);
+//     res.status(500).send('Server error');
+//   }
+// });
+
+
+
+// app.get('/employee/tours', async (req, res) => {
+//   try {
+//     const { from, to } = req.query;
+//     let query = {};
+
+//     if (from && to && !isNaN(Date.parse(from)) && !isNaN(Date.parse(to))) {
+//       const fromDate = new Date(from);
+//       const toDate = new Date(to);
+//       toDate.setHours(23, 59, 59, 999); // Include the full "To" date
+
+//       query.leavingDate = {
+//         $gte: fromDate,
+//         $lte: toDate
+//       };
+//     }
+
+//     const tours = await Tour.find(query).sort({ leavingDate: 1 });
+//     res.render('customer/tourList', { tours });
+
+//   } catch (err) {
+//     console.error('Error fetching tours:', err);
+//     res.status(500).send('Server error');
+//   }
+// });
+
 app.get('/admin/tour/list', async (req, res) => {
   try {
     const { from, to } = req.query;
     let query = {};
 
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Midnight start of today
+
+    // Default filter: only today's and future tours
+    query.leavingDate = { $gte: today };
+
     if (from && to && !isNaN(Date.parse(from)) && !isNaN(Date.parse(to))) {
       const fromDate = new Date(from);
       const toDate = new Date(to);
-      toDate.setHours(23, 59, 59, 999); // Include the full "To" date
+      toDate.setHours(23, 59, 59, 999);
 
-      query.leavingDate = {
-        $gte: fromDate,
-        $lte: toDate
-      };
+      query.leavingDate = { $gte: fromDate, $lte: toDate };
+    } else if (from && !to) {
+      query.leavingDate = { $gte: new Date(from) };
+    } else if (!from && to) {
+      const toDate = new Date(to);
+      toDate.setHours(23, 59, 59, 999);
+      query.leavingDate = { $gte: today, $lte: toDate };
     }
 
     const tours = await Tour.find(query).sort({ leavingDate: 1 });
@@ -344,20 +459,34 @@ app.get('/admin/tour/list', async (req, res) => {
   }
 });
 
-
-
 app.get('/employee/tours', async (req, res) => {
   try {
     const { from, to } = req.query;
     let query = {};
 
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Start of today
+
+    // Default filter to future tours only
+    query.leavingDate = { $gte: today };
+
+    // If custom from/to is provided, override filter
     if (from && to && !isNaN(Date.parse(from)) && !isNaN(Date.parse(to))) {
       const fromDate = new Date(from);
       const toDate = new Date(to);
-      toDate.setHours(23, 59, 59, 999); // Include the full "To" date
+      toDate.setHours(23, 59, 59, 999); // Include full "to" day
 
       query.leavingDate = {
         $gte: fromDate,
+        $lte: toDate
+      };
+    } else if (from && !to) {
+      query.leavingDate = { $gte: new Date(from) };
+    } else if (!from && to) {
+      const toDate = new Date(to);
+      toDate.setHours(23, 59, 59, 999);
+      query.leavingDate = {
+        $gte: today,
         $lte: toDate
       };
     }
@@ -370,6 +499,7 @@ app.get('/employee/tours', async (req, res) => {
     res.status(500).send('Server error');
   }
 });
+
 
 // Appointments API
 app.get('/employee/api/appointments', async (req, res) => {
